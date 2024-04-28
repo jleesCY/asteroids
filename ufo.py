@@ -1,0 +1,3 @@
+class UFO:
+    def __init__(self):
+        ...
