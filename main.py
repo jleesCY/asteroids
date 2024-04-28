@@ -6,11 +6,9 @@ from vector import Vector
 import pygame as pg
 from pygame.locals import *
 import time
-import math
 
-TICK_SPEED = 64
+TICKS_PER_SECOND = 60
 FPS = 60
-#TARGET_FPS = 60
 RUNNING = True
 CLOCK = pg.time.Clock()
 
@@ -19,9 +17,6 @@ WIDTH = 1000
 HEIGHT = WIDTH * RATIO
 RES = (WIDTH,HEIGHT)
 SCREEN = pg.display.set_mode(RES)
-
-def updateAll(dt):
-    ...
 
 def main():
     global RUNNING
@@ -35,7 +30,7 @@ def main():
 
     # game loop
     while RUNNING:
-        CLOCK.tick(FPS)
+        #CLOCK.tick(FPS)
         SCREEN.fill((0,0,0))
 
         # compute delta time
@@ -43,7 +38,7 @@ def main():
         dt = now - prev_time
         prev_time = now
 
-        player.update(dt)
+        player.update(dt, TICKS_PER_SECOND)
         pg.display.update()
 
         for event in pg.event.get():

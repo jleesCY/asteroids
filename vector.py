@@ -33,9 +33,9 @@ class Vector:
 
         return Vector(mag, deg)
 
-    def displacement(self, vector, dt, mass):
+    def displacement(self, vector, mass):
         a = Vector(vector.magnitude, vector.rotation)
-        a.magnitude = (a.magnitude * 0.5) / mass #* dt**2
+        a.magnitude = ((a.magnitude * 0.5) / mass)
 
         return self.add(a)
 
