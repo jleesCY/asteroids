@@ -102,8 +102,6 @@ class Ship:
             screen.get_height() - self.rect.y]  # bottom
         idx = next((i for i, x in enumerate(arr) if x == min(arr)), None) if any(x < 0 for x in arr) else -1
 
-        print(arr)
-
         match idx:
             case -1:
                 return (self.x_pos, self.y_pos)
