@@ -82,6 +82,8 @@ class Ship:
             if self.movement_vector.magnitude <= 0.1:
                 self.movement_vector.set_magnitude(0)
 
+        print(self.movement_vector.magnitude)
+
     def print_diagnostics(self):
         print(f'{self.control_vector.rotation} {self.control_vector.magnitude}')
 
