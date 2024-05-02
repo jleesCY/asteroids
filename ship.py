@@ -6,13 +6,18 @@ class Ship:
 
     pg = None
     texture = None
+    texture_accel = None
     rect = None
 
     x_pos = 0
     y_pos = 0
 
-    rect_w = 50
     rect_h = 50
+    rect_w = rect_h * 0.75
+
+    curr_dt = 0
+    curr_accel_texture = False
+    
 
     # movement
     rotation_dir = -1   # -1 is left, 1, is right
@@ -24,11 +29,12 @@ class Ship:
 
     # fine-tune ----------
     max_speed = 10
-    control_max_speed = 2
+    control_max_speed = 2.25
     rotation_speed = 6
     deceleration = 2
     vector_change_padding = 5
-    mass = 9
+    mass = 10
+    blink_dt = 0.1
     # --------------------
 
     vector_len = 7
@@ -39,7 +45,8 @@ class Ship:
         self.control_vector = Vector(0,0)
         self.movement_vector = Vector(0,0)
         self.control_vector.rotate(270)
-        self.texture = self.pg.transform.scale(pg.image.load("assets/ship.png"), (self.rect_w, self.rect_h)) 
+        self.texture = self.pg.transform.smoothscale(pg.image.load("assets/ship.svg"), (self.rect_w, self.rect_h)) 
+        self.texture_accel = self.pg.transform.smoothscale(pg.image.load("assets/ship_move.svg"), (self.rect_w, self.rect_h))
         self.x_pos = pg.display.get_surface().get_width() / 2
         self.y_pos = pg.display.get_surface().get_height() / 2
         self.rect = pygame.Rect(self.x_pos - 25, self.y_pos - 25, self.rect_w, self.rect_h)
@@ -64,9 +71,13 @@ class Ship:
         self.pg.draw.rect(self.pg.display.get_surface(), (255,0,0), self.rect, 3)
 
     def draw(self):
-        rotated_image = self.pg.transform.rotate(self.texture, -self.control_vector.rotation - 90)
-        new_rect = rotated_image.get_rect(center = self.texture.get_rect(center=(self.x_pos, self.y_pos)).center)
+        rotated_image = None
+        if self.is_accelerating:
+            rotated_image = self.pg.transform.rotate(self.texture_accel, -self.control_vector.rotation - 90)
+        else:
+            rotated_image = self.pg.transform.rotate(self.texture, -self.control_vector.rotation - 90)
 
+        new_rect = rotated_image.get_rect(center = self.texture.get_rect(center=(self.x_pos, self.y_pos)).center)
         self.pg.display.get_surface().blit(rotated_image, new_rect)
 
     def update_movement(self, dt, tps):
@@ -77,15 +88,15 @@ class Ship:
                 self.movement_vector.set_magnitude(self.max_speed)
 
         else:
+            self.curr_accel_texture = False
+            self.curr_dt = 0
             self.control_vector.set_magnitude(0)
             self.movement_vector = self.movement_vector.displacement(Vector((self.movement_vector.magnitude / self.deceleration) * dt * tps, self.movement_vector.rotation + 180), self.mass)
             if self.movement_vector.magnitude <= 0.1:
                 self.movement_vector.set_magnitude(0)
 
-        print(self.movement_vector.magnitude)
-
     def print_diagnostics(self):
-        print(f'{self.control_vector.rotation} {self.control_vector.magnitude}')
+        ...
 
     def update_rotation(self, dt, tps):
         if self.is_rotating == True:
@@ -126,7 +137,7 @@ class Ship:
         self.update_rect()
         self.x_pos, self.y_pos = self.fix_out_of_bounds()
 
-        #self.print_diagnostics()
+        self.print_diagnostics()
         #self.draw_vects()
         #self.draw_rect()
         self.draw()

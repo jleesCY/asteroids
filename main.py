@@ -30,7 +30,7 @@ def main():
 
     # game loop
     while RUNNING:
-        #CLOCK.tick(FPS)
+        CLOCK.tick(FPS)
         SCREEN.fill((0,0,0))
 
         # compute delta time
