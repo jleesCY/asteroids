@@ -1,8 +1,4 @@
 from ship import Ship
-from asteroid import Asteroid
-from projectile import Projectile
-from ufo import UFO
-from vector import Vector
 import pygame as pg
 from pygame.locals import *
 import time
@@ -41,6 +37,8 @@ def main():
         player.update(dt, TICKS_PER_SECOND)
         pg.display.update()
 
+        p_ready = True
+
         for event in pg.event.get():
 
             keys = pg.key.get_pressed()
@@ -52,6 +50,14 @@ def main():
                 player.is_accelerating = True
             else:
                 player.is_accelerating = False
+
+            if p_ready:
+                if keys[K_p]:
+                    p_ready = False
+                    player.spawn_bullet()
+            else:
+                if not keys[K_p]:
+                    p_ready = True
 
             if keys[K_q] or keys[K_w]:
                 player.is_rotating = True

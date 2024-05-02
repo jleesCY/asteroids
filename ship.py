@@ -1,4 +1,5 @@
 from vector import Vector
+from projectile import Projectile
 import math
 import pygame
 
@@ -13,10 +14,11 @@ class Ship:
     y_pos = 0
 
     rect_h = 50
-    rect_w = rect_h * 0.75
+    rect_w = rect_h * 0.65
 
     curr_dt = 0
     curr_accel_texture = False
+    bullets = []
     
 
     # movement
@@ -28,13 +30,15 @@ class Ship:
     is_accelerating = False
 
     # fine-tune ----------
-    max_speed = 10
+    max_speed = 8
     control_max_speed = 2.25
     rotation_speed = 6
     deceleration = 2
     vector_change_padding = 5
     mass = 10
     blink_dt = 0.1
+    max_bullets = 5
+    max_bullet_distance = 500
     # --------------------
 
     vector_len = 7
@@ -49,7 +53,7 @@ class Ship:
         self.texture_accel = self.pg.transform.smoothscale(pg.image.load("assets/ship_move.svg"), (self.rect_w, self.rect_h))
         self.x_pos = pg.display.get_surface().get_width() / 2
         self.y_pos = pg.display.get_surface().get_height() / 2
-        self.rect = pygame.Rect(self.x_pos - 25, self.y_pos - 25, self.rect_w, self.rect_h)
+        self.rect = pg.Rect(self.x_pos - (self.rect_w / 2), self.y_pos - (self.rect_h / 2), self.rect_w, self.rect_h)
 
     def draw_vects(self):
         self.pg.draw.line(
@@ -96,7 +100,7 @@ class Ship:
                 self.movement_vector.set_magnitude(0)
 
     def print_diagnostics(self):
-        ...
+        print(f"{len(self.bullets)}")
 
     def update_rotation(self, dt, tps):
         if self.is_rotating == True:
@@ -126,10 +130,23 @@ class Ship:
                 return (screen.get_width() - arr[1] + (self.rect_w / 2), screen.get_height() + (self.rect_h / 2))
             case 3:
                 return (screen.get_width() - arr[1] + (self.rect_w / 2), -(self.rect_h / 2))
+    
+    def spawn_bullet(self):
+        if len(self.bullets) < self.max_bullets:
+            self.bullets.append(Projectile(self.x_pos, self.y_pos, self.control_vector.rotation, self.pg))
+
+    def update_bullets(self, dt, tps):
+        for bullet in self.bullets:
+            bullet.update(dt, tps)
+        
+        if len(self.bullets):
+            if self.bullets[0].distance >= self.max_bullet_distance:
+                self.bullets.pop(0)
 
     def update(self, dt, tps):
         self.update_movement(dt, tps)
         self.update_rotation(dt, tps)
+        self.update_bullets(dt, tps)
 
         self.x_pos += self.movement_vector.x() * dt * tps
         self.y_pos += self.movement_vector.y() * dt * tps
@@ -137,7 +154,7 @@ class Ship:
         self.update_rect()
         self.x_pos, self.y_pos = self.fix_out_of_bounds()
 
-        self.print_diagnostics()
+        #self.print_diagnostics()
         #self.draw_vects()
         #self.draw_rect()
         self.draw()
