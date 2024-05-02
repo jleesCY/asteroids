@@ -9,6 +9,7 @@ class Ship:
     texture = None
     texture_accel = None
     rect = None
+    mask = None
 
     x_pos = 0
     y_pos = 0
@@ -38,7 +39,7 @@ class Ship:
     mass = 10
     blink_dt = 0.1
     max_bullets = 5
-    max_bullet_distance = 500
+    max_bullet_distance = 600
     # --------------------
 
     vector_len = 10
@@ -54,6 +55,7 @@ class Ship:
         self.x_pos = pg.display.get_surface().get_width() / 2
         self.y_pos = pg.display.get_surface().get_height() / 2
         self.rect = pg.Rect(self.x_pos - (self.rect_w / 2), self.y_pos - (self.rect_h / 2), self.rect_w, self.rect_h)
+        self.mask = pg.mask.from_surface(self.texture)
 
     def draw_vects(self):
         self.pg.draw.line(
@@ -102,7 +104,7 @@ class Ship:
                 self.movement_vector.set_magnitude(0)
 
     def print_diagnostics(self):
-        print(f"{len(self.bullets)}")
+        print(f"{self.movement_vector.magnitude}")
 
     def update_rotation(self, dt, tps):
         if self.is_rotating == True:
@@ -145,6 +147,11 @@ class Ship:
             if self.bullets[0].distance >= self.max_bullet_distance:
                 self.bullets.pop(0)
 
+    def reset(self):
+        self.x_pos = self.pg.display.get_surface().get_width() / 2
+        self.y_pos = self.pg.display.get_surface().get_height() / 2
+        self.control_vector.set_magnitude(0)
+
     def update(self, dt, tps):
         self.update_movement(dt, tps)
         self.update_rotation(dt, tps)
@@ -156,7 +163,7 @@ class Ship:
         self.update_rect()
         self.x_pos, self.y_pos = self.fix_out_of_bounds()
 
-        #self.print_diagnostics()
+        self.print_diagnostics()
         #self.draw_vects()
         #self.draw_rect()
         self.draw()

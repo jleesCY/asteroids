@@ -4,6 +4,7 @@ class Asteroid:
     vector = None
     texture = None
     rect = None
+    mask = None
 
     small_speed = 2
     medium_speed = 1.7
@@ -45,6 +46,7 @@ class Asteroid:
                 self.rect = pg.Rect(self.x_pos - (self.large_rect_wh / 2), self.y_pos - (self.large_rect_wh / 2), self.large_rect_wh, self.large_rect_wh)
                 self.rect_w = self.large_rect_wh
                 self.rect_h = self.large_rect_wh
+        self.mask = pg.mask.from_surface(self.texture)
     
     def update_rect(self):
         self.rect.center = (self.x_pos, self.y_pos)

@@ -6,6 +6,7 @@ class Projectile:
     vector = None
     texture = None
     rect = None
+    mask = None
 
     x_pos = 0
     y_pos = 0
@@ -30,6 +31,7 @@ class Projectile:
         self.texture = self.pg.transform.smoothscale(pg.image.load("assets/projectile.svg"), (self.rect_w, self.rect_h))
         self.vector = Vector(self.speed, angle)
         self.rect = pg.Rect(self.x_pos - (self.rect_w / 2), self.y_pos - (self.rect_h / 2), self.rect_w, self.rect_h)
+        self.mask = pg.mask.from_surface(self.texture)
 
     def draw(self):
         new_rect = self.texture.get_rect(center = self.texture.get_rect(center=(self.x_pos, self.y_pos)).center)
@@ -81,5 +83,5 @@ class Projectile:
 
         self.update_rect()
         self.x_pos, self.y_pos = self.fix_out_of_bounds()
-        
+
         self.draw()

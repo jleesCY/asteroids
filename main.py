@@ -15,11 +15,16 @@ HEIGHT = WIDTH * RATIO
 RES = (WIDTH,HEIGHT)
 SCREEN = pg.display.set_mode(RES)
 
+LIFE_IMAGE = pg.image.load("assets/ship.svg")
+LIFE_IMAGE_HEIGHT = 45
+LIFE_IMAGE_WIDTH = LIFE_IMAGE_HEIGHT * 0.6
+
 pg.init()
 pg.font.init()
 
 FONT = pg.font.Font("assets/fonts/Hyperspace.ttf", size=50)
 SCORE = 0
+LIVES = 3
 
 pg.display.set_caption('Asteroids')
 
@@ -28,6 +33,7 @@ ASTEROIDS = []
 def main():
     global RUNNING
     global SCORE
+    global LIVES
 
     player = Ship(pg=pg)
 
@@ -38,7 +44,7 @@ def main():
 
     # game loop
     while RUNNING:
-        CLOCK.tick(FPS)
+        #CLOCK.tick(FPS)
         SCREEN.fill((0,0,0))
 
         # compute delta time
@@ -52,6 +58,15 @@ def main():
 
         for asteroid in ASTEROIDS:
             asteroid.update(dt, TICKS_PER_SECOND)
+
+            if player.rect.colliderect(asteroid.rect):
+                if LIVES == 0:
+                    game_over()
+                    return
+                player.reset()
+                LIVES -= 1
+
+
             for bullet in player.bullets:
                 if bullet.rect.colliderect(asteroid.rect):
                     ASTEROIDS.remove(asteroid)
@@ -64,11 +79,14 @@ def main():
                         case 1: SCORE += 100
                         case 2: SCORE += 50
                         case 3: SCORE += 20
+
+        for i in range(LIVES):
+            texture = pg.transform.smoothscale(LIFE_IMAGE, (LIFE_IMAGE_WIDTH, LIFE_IMAGE_HEIGHT)) 
+            SCREEN.blit(texture, (15 + ((LIFE_IMAGE_WIDTH + 5) * i), 60))
         
         pg.display.update()
 
         p_ready = True
-
         for event in pg.event.get():
 
             keys = pg.key.get_pressed()
@@ -97,6 +115,10 @@ def main():
                     player.rotation_dir = -1
             else:
                 player.is_rotating = False
+
+def game_over():
+    print("game over")
+    RUNNING = False
                     
 # Call Main
 if __name__ == '__main__':
