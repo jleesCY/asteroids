@@ -15,14 +15,21 @@ HEIGHT = WIDTH * RATIO
 RES = (WIDTH,HEIGHT)
 SCREEN = pg.display.set_mode(RES)
 
+pg.init()
+pg.font.init()
+
+FONT = pg.font.Font("assets/fonts/Hyperspace.ttf", size=50)
+SCORE = 0
+
+pg.display.set_caption('Asteroids')
+
 ASTEROIDS = []
 
 def main():
     global RUNNING
+    global SCORE
 
     player = Ship(pg=pg)
-
-    pg.init()
 
     prev_time = time.time()
     dt = 0
@@ -41,6 +48,8 @@ def main():
 
         player.update(dt, TICKS_PER_SECOND)
 
+        SCREEN.blit(FONT.render(str(SCORE), False, (255, 255, 255)), (15, 0))
+
         for asteroid in ASTEROIDS:
             asteroid.update(dt, TICKS_PER_SECOND)
             for bullet in player.bullets:
@@ -50,6 +59,11 @@ def main():
 
                     for new in asteroid.explode():
                         ASTEROIDS.append(new)
+                    
+                    match asteroid.size:
+                        case 1: SCORE += 100
+                        case 2: SCORE += 50
+                        case 3: SCORE += 20
         
         pg.display.update()
 
