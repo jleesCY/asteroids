@@ -2,6 +2,7 @@ from ship import Ship
 import pygame as pg
 from pygame.locals import *
 import time
+from asteroid import Asteroid
 
 TICKS_PER_SECOND = 60
 FPS = 60
@@ -14,6 +15,8 @@ HEIGHT = WIDTH * RATIO
 RES = (WIDTH,HEIGHT)
 SCREEN = pg.display.set_mode(RES)
 
+ASTEROIDS = []
+
 def main():
     global RUNNING
 
@@ -23,6 +26,8 @@ def main():
 
     prev_time = time.time()
     dt = 0
+
+    ASTEROIDS.append(Asteroid(100, 100, 3, 45, pg))
 
     # game loop
     while RUNNING:
@@ -35,6 +40,17 @@ def main():
         prev_time = now
 
         player.update(dt, TICKS_PER_SECOND)
+
+        for asteroid in ASTEROIDS:
+            asteroid.update(dt, TICKS_PER_SECOND)
+            for bullet in player.bullets:
+                if bullet.rect.colliderect(asteroid.rect):
+                    ASTEROIDS.remove(asteroid)
+                    player.bullets.remove(bullet)
+
+                    for new in asteroid.explode():
+                        ASTEROIDS.append(new)
+        
         pg.display.update()
 
         p_ready = True

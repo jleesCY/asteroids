@@ -41,7 +41,7 @@ class Ship:
     max_bullet_distance = 500
     # --------------------
 
-    vector_len = 7
+    vector_len = 10
 
 
     def __init__(self, pg: pygame):
@@ -70,6 +70,8 @@ class Ship:
             (self.x_pos + self.control_vector.x() * self.vector_len, self.y_pos + self.control_vector.y() * self.vector_len),
             width=5
         )
+        for bullet in self.bullets:
+            bullet.draw_vects()
     
     def draw_rect(self):
         self.pg.draw.rect(self.pg.display.get_surface(), (255,0,0), self.rect, 3)

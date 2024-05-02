@@ -20,6 +20,8 @@ class Projectile:
     speed = 13
     # --------------------
 
+    vector_len = 10
+
     def __init__(self, x, y, angle, pg):
         self.x_pos = x
         self.y_pos = y
@@ -32,6 +34,15 @@ class Projectile:
     def draw(self):
         new_rect = self.texture.get_rect(center = self.texture.get_rect(center=(self.x_pos, self.y_pos)).center)
         self.pg.display.get_surface().blit(self.texture, new_rect)
+
+    def draw_vects(self):
+        self.pg.draw.line(
+            self.pg.display.get_surface(),
+            (0,255,0),
+            (self.x_pos, self.y_pos),
+            (self.x_pos + self.vector.x() * self.vector_len, self.y_pos + self.vector.y() * self.vector_len),
+            width=3
+        )
 
     def update_rect(self):
         self.rect.center = (self.x_pos, self.y_pos)
@@ -70,5 +81,5 @@ class Projectile:
 
         self.update_rect()
         self.x_pos, self.y_pos = self.fix_out_of_bounds()
-
+        
         self.draw()
