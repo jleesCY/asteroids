@@ -3,6 +3,8 @@ import pygame as pg
 from pygame.locals import *
 import time
 from asteroid import Asteroid
+import random
+import math
 
 TICKS_PER_SECOND = 60
 FPS = 60
@@ -40,8 +42,6 @@ def main():
     prev_time = time.time()
     dt = 0
 
-    ASTEROIDS.append(Asteroid(100, 100, 3, 45, pg))
-
     # game loop
     while RUNNING:
         #CLOCK.tick(FPS)
@@ -55,6 +55,9 @@ def main():
         player.update(dt, TICKS_PER_SECOND)
 
         SCREEN.blit(FONT.render(str(SCORE), False, (255, 255, 255)), (15, 0))
+
+        if len(ASTEROIDS) < 4:
+            spawn_asteroid()
 
         for asteroid in ASTEROIDS:
             asteroid.update(dt, TICKS_PER_SECOND)
@@ -82,7 +85,7 @@ def main():
 
         for i in range(LIVES):
             texture = pg.transform.smoothscale(LIFE_IMAGE, (LIFE_IMAGE_WIDTH, LIFE_IMAGE_HEIGHT)) 
-            SCREEN.blit(texture, (15 + ((LIFE_IMAGE_WIDTH + 5) * i), 60))
+            SCREEN.blit(texture, (15 + ((LIFE_IMAGE_WIDTH + 4) * i), 60))
         
         pg.display.update()
 
@@ -117,8 +120,35 @@ def main():
                 player.is_rotating = False
 
 def game_over():
+    global RUNNING
     print("game over")
     RUNNING = False
+
+def spawn_asteroid():
+    global ASTEROIDS
+
+    ast = Asteroid(0, 0, 3, 0, pg)
+    rand = random.randint(1,4)
+
+    match rand:
+        case 1: # left
+            ast.x_pos = -ast.large_rect_wh
+            ast.y_pos = random.uniform(0, HEIGHT)
+        case 2: # right
+            ast.x_pos = ast.large_rect_wh + WIDTH
+            ast.y_pos = random.uniform(0, HEIGHT)
+        case 3: # top
+            ast.x_pos = random.uniform(0, WIDTH)
+            ast.y_pos = -ast.large_rect_wh
+        case 4: # bottom
+            ast.x_pos = random.uniform(0, WIDTH)
+            ast.y_pos = ast.large_rect_wh + HEIGHT
+    
+    ast.vector.rotation = random.randint(0,359)
+    
+    ASTEROIDS.append(ast)
+
+    a = Asteroid(0, 0, 3, 0, pg=pg)
                     
 # Call Main
 if __name__ == '__main__':
